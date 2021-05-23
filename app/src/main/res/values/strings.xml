@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">Fotos</string>
+    <string name="text_title" formatted="true" translatable="false">Foto %1$s</string>
+    <string name="hint_title_photo">Titulo</string>
+
+    <string name="decline_bottom">Cancelar</string>
+    <string name="delete_bottom">Borrar</string>
+    <string name="edit_bottom">Editar</string>
+    <string name="save_bottom">Guardar</string>
+
+    <string name="edit_dialog_title">Editar Foto</string>
+    <string name="new_photo_dialog_title">Crear Foto</string>
+    <string name="delete_dialog_title">Borrar Foto</string>
+    <string name="delete_dialog_message">¿Está Seguro que desea borrar la foto?</string>
+    <string name="top_menu_access_camera">Acceder a la Cámara</string>
+    <string name="top_menu_access_gallery">Acceder a la Galería</string>
+</resources>
