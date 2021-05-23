@@ -42,8 +42,6 @@
 		
 ## ScreenShoots
 
-![Image of Yaktocat]
-(https://github.com/Ingmicha/android-mvvvm-clean/blob/master/screenshots/001.jpeg?raw=true)
+![001](https://user-images.githubusercontent.com/17170682/119275608-aaa36900-bbdb-11eb-9d00-67d78312f2ce.jpeg)
+![002](https://user-images.githubusercontent.com/17170682/119275609-ad05c300-bbdb-11eb-8b51-4b471d189a56.jpeg)
 
-![Image of Yaktocat]
-(https://github.com/Ingmicha/android-mvvvm-clean/blob/master/screenshots/002.jpeg?raw=true)
