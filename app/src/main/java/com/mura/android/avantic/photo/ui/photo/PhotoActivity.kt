@@ -14,12 +14,12 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
+import androidx.work.WorkManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
 import com.mura.android.avantic.R
 import com.mura.android.avantic.databinding.ActivityPhotoBinding
-import com.mura.android.avantic.photo.domain.model.Photo
-import com.mura.android.avantic.utils.SavePhotoUtil
+import com.mura.android.avantic.photo.data.response.ResponsePhoto
 import com.mura.android.avantic.utils.extentions.*
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.*
@@ -33,6 +33,7 @@ class PhotoActivity : AppCompatActivity() {
     private lateinit var binding: ActivityPhotoBinding
     private lateinit var adapter: PhotoAdapter
     private lateinit var permission: String
+    private lateinit var title: String
 
     private var code by Delegates.notNull<Int>()
     private var isFromCamera by Delegates.notNull<Boolean>()
@@ -43,18 +44,12 @@ class PhotoActivity : AppCompatActivity() {
                 // There are no request codes
                 if (isFromCamera) {
                     val imageBitmap = result.data!!.extras!!.get("data") as Bitmap
-                    val uri = SavePhotoUtil.saveBitmap(
-                        this,
-                        imageBitmap,
-                        "${System.currentTimeMillis()}"
-                    )
-                    onShowDialogForNewPhoto(uri.toString())
+                    onShowDialogForNewPhoto("", imageBitmap)
                 } else {
                     val intent: Intent? = result.data
                     intent ?: return@registerForActivityResult
-                    onShowDialogForNewPhoto(intent.data!!.toString())
+                    onShowDialogForNewPhoto(intent.data!!.toString(), null)
                 }
-
             }
         }
 
@@ -65,6 +60,7 @@ class PhotoActivity : AppCompatActivity() {
         binding.apply {
             lifecycleOwner = this.lifecycleOwner
         }
+        WorkManager.getInstance(this).cancelAllWork()
         setToolbar()
         setRecyclerView()
         setObservers()
@@ -103,7 +99,7 @@ class PhotoActivity : AppCompatActivity() {
             binding.progressCircular.visibility = if (it) View.VISIBLE else View.GONE
         }
 
-        observe(photoViewModel.photoList) {
+        observe(photoViewModel.photoDataList) {
             it ?: return@observe
             binding.recyclerViewLyricList.visibility = View.VISIBLE
             adapter.updateDate(it)
@@ -116,7 +112,7 @@ class PhotoActivity : AppCompatActivity() {
     }
 
     private fun setData() {
-        photoViewModel.getPhotoFromApi()
+        photoViewModel.requestPhotos()
     }
 
     private fun openGallery() {
@@ -149,28 +145,27 @@ class PhotoActivity : AppCompatActivity() {
         }
     }
 
-    private fun onShowDialogForNewPhoto(url: String) {
+    private fun onShowDialogForNewPhoto(uri: String, image: Bitmap?) {
         MaterialAlertDialogBuilder(this)
             .setTitle(resources.getString(R.string.new_photo_dialog_title))
             .setNegativeButton(resources.getString(R.string.decline_bottom)) { dialog, which ->
                 dialog.dismiss()
             }
             .setPositiveButton(resources.getString(R.string.save_bottom)) { dialog, which ->
-                val newTitle =
+                title =
                     (dialog as? AlertDialog)?.findViewById<TextInputEditText>(R.id.title_edit_text)?.text.toString()
-
                 photoViewModel.createNewPhotoInApi(
-                    Photo(
-                        title = newTitle,
-                        url = url,
-                        thumbnailUrl = url,
+                    image,
+                    ResponsePhoto(
+                        title = title,
+                        url = uri,
+                        thumbnailUrl = uri,
                         albumId = (0..100).random().toString()
                     )
                 )
             }
             .setView(R.layout.layout_edit_dialog)
             .show()
-
     }
 
     private fun checkPermission() {

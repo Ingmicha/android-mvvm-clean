@@ -4,7 +4,8 @@ import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.mura.android.avantic.photo.data.api.PhotoApiDataSource
 import com.mura.android.avantic.photo.data.database.PhotoDao
-import com.mura.android.avantic.photo.domain.model.Photo
+import com.mura.android.avantic.photo.data.response.ResponsePhoto
+import com.mura.android.avantic.photo.domain.model.PhotoData
 import com.mura.android.avantic.photo.domain.repository.PhotoRepository
 import com.mura.android.avantic.utils.extentions.safeApiCall
 import com.mura.android.avantic.utils.response.ResultManager
@@ -19,15 +20,18 @@ class PhotoRepositoryImpl @Inject constructor(
     override suspend fun getPhotosFromApi(): ResultManager<Response<JsonArray>> {
         return safeApiCall(
             call = {
-                ResultManager.Success(
-                    dataSource.getPhotos()
-                )
+                val response = dataSource.getPhotos()
+                if (response.isSuccessful) {
+                    ResultManager.Success(response)
+                } else {
+                    ResultManager.Error(response.code(), response.errorBody().toString())
+                }
             },
             errorMessage = "Exception occurred!"
         )
     }
 
-    override suspend fun getPhotosFromDB(): ResultManager<List<Photo>> {
+    override suspend fun getPhotosFromDB(): ResultManager<List<PhotoData>> {
         return safeApiCall(
             call = {
                 ResultManager.Success(
@@ -38,44 +42,50 @@ class PhotoRepositoryImpl @Inject constructor(
         )
     }
 
-    override suspend fun insertPhotosInApi(photo: Photo): ResultManager<Response<JsonObject>> {
+    override suspend fun insertPhotosInApi(photoData: ResponsePhoto): ResultManager<Response<JsonObject>> {
+        return safeApiCall(
+            call = {
+                val response = dataSource.postPhoto(photoData)
+                if (response.isSuccessful) {
+                    ResultManager.Success(response)
+                } else {
+                    ResultManager.Error(response.code(), response.errorBody().toString())
+                }
+            },
+            errorMessage = "Exception occurred!"
+        )
+    }
+
+    override suspend fun insertPhotosInDB(photoData: List<PhotoData>): ResultManager<List<Long>> {
         return safeApiCall(
             call = {
                 ResultManager.Success(
-                    dataSource.postPhoto(photo)
+                    dao.insertAll(photoData)
                 )
             },
             errorMessage = "Exception occurred!"
         )
     }
 
-    override suspend fun insertPhotosInDB(photo: List<Photo>): ResultManager<List<Long>> {
+    override suspend fun updatePhotoInApi(photoData: ResponsePhoto): ResultManager<Response<JsonObject>> {
         return safeApiCall(
             call = {
-                ResultManager.Success(
-                    dao.insertAll(photo)
-                )
+                val response = dataSource.putPhoto(photoData)
+                if (response.isSuccessful) {
+                    ResultManager.Success(response)
+                } else {
+                    ResultManager.Error(response.code(), response.errorBody().toString())
+                }
             },
             errorMessage = "Exception occurred!"
         )
     }
 
-    override suspend fun updatePhotoInApi(photo: Photo): ResultManager<Response<JsonObject>> {
+    override suspend fun updatePhotoInDB(photoData: PhotoData): ResultManager<Int> {
         return safeApiCall(
             call = {
                 ResultManager.Success(
-                    dataSource.putPhoto(photo)
-                )
-            },
-            errorMessage = "Exception occurred!"
-        )
-    }
-
-    override suspend fun updatePhotoInDB(photo: Photo): ResultManager<Int> {
-        return safeApiCall(
-            call = {
-                ResultManager.Success(
-                    dao.updateTitleById(photo.title, photo.id)
+                    dao.updateTitleById(photoData.title, photoData.id)
                 )
             },
             errorMessage = "Exception occurred!"
@@ -85,9 +95,12 @@ class PhotoRepositoryImpl @Inject constructor(
     override suspend fun deletePhotoByIdToApi(id: String): ResultManager<Response<JsonObject>> {
         return safeApiCall(
             call = {
-                ResultManager.Success(
-                    dataSource.deletePhotoById(id)
-                )
+                val response = dataSource.deletePhotoById(id)
+                if (response.isSuccessful) {
+                    ResultManager.Success(response)
+                } else {
+                    ResultManager.Error(response.code(), response.errorBody().toString())
+                }
             },
             errorMessage = "Exception occurred!"
         )

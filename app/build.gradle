@@ -111,6 +111,10 @@ dependencies {
     //Picasso
     implementation 'com.squareup.picasso:picasso:2.71828'
 
+    //WorkManager
+    implementation 'androidx.hilt:hilt-work:1.0.0'
+    implementation "androidx.work:work-runtime-ktx:2.6.0-alpha02"
+
     testImplementation "androidx.arch.core:core-testing:2.1.0"
 
     testImplementation "androidx.room:room-testing:2.3.0"

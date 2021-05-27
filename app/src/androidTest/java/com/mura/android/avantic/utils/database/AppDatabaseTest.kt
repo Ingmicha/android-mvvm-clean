@@ -5,7 +5,7 @@ import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.mura.android.avantic.photo.data.database.PhotoDao
-import com.mura.android.avantic.photo.domain.model.Photo
+import com.mura.android.avantic.photo.domain.model.PhotoData
 import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Before
@@ -36,7 +36,7 @@ class AppDatabaseTest {
     @Test
     @Throws(Exception::class)
     fun crudTest() = runBlocking {
-        val photo = Photo(
+        val photo = PhotoData(
             albumId = (0..10).random().toString(),
             title = (11..20).random().toString(),
             url = (21..30).random().toString(),

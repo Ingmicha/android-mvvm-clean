@@ -1,6 +1,6 @@
 package com.mura.android.avantic.photo.data.api
 
-import com.mura.android.avantic.photo.domain.model.Photo
+import com.mura.android.avantic.photo.data.response.ResponsePhoto
 import javax.inject.Inject
 
 class PhotoApiDataSource @Inject constructor(
@@ -10,11 +10,11 @@ class PhotoApiDataSource @Inject constructor(
     suspend fun getPhotos() =
         photoApi.getPhotos()
 
-    suspend fun postPhoto(photo: Photo) =
-        photoApi.postPhoto(photo)
+    suspend fun postPhoto(photoData: ResponsePhoto) =
+        photoApi.postPhoto(photoData)
 
-    suspend fun putPhoto(photo: Photo) =
-        photoApi.postPhoto(photo)
+    suspend fun putPhoto(photoData: ResponsePhoto) =
+        photoApi.putPhoto(photoData.id, photoData)
 
     suspend fun deletePhotoById(id: String) =
         photoApi.deletePhotoById(id)
